@@ -1,25 +1,22 @@
 //Thanks to http://benjii.me/2010/08/endless-scrolling-listview-in-android/ for this code snippit.
 
-package com.rcythr.secretsms.util;
+package com.rcythr.secretsms;
 
-import com.rcythr.secretsms.SMSListing;
 
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 
-public class EndlessScrollListener implements OnScrollListener {
+public class SMSScrollListener implements OnScrollListener {
 
     private int visibleThreshold = 5;
-    private int currentPage = 0;
     private int previousTotal = 0;
     private boolean loading = true;
     private SMSListing listing;
     
-    
-    public EndlessScrollListener(SMSListing listing) {
+    public SMSScrollListener(SMSListing listing) {
     	this.listing = listing;
     }
-    public EndlessScrollListener(int visibleThreshold) {
+    public SMSScrollListener(int visibleThreshold) {
         this.visibleThreshold = visibleThreshold;
     }
 
@@ -29,7 +26,6 @@ public class EndlessScrollListener implements OnScrollListener {
             if (totalItemCount > previousTotal) {
                 loading = false;
                 previousTotal = totalItemCount;
-                currentPage++;
             }
         }
         if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {

@@ -1,4 +1,4 @@
-package com.rcythr.secretsms.encryption;
+package com.rcythr.secretsms;
 
 import java.math.BigInteger;
 

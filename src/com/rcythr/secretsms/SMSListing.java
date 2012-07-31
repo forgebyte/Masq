@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
 
-import com.rcythr.secretsms.encryption.AES;
-import com.rcythr.secretsms.util.EndlessScrollListener;
 import com.secretconversations.R;
 
 import android.app.ListActivity;
@@ -18,7 +16,6 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.provider.ContactsContract;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -93,7 +90,7 @@ public class SMSListing extends ListActivity {
 		
 		setContentView(R.layout.listing);
 		
-		getListView().setOnScrollListener(new EndlessScrollListener(this));
+		getListView().setOnScrollListener(new SMSScrollListener(this));
 		
 	}
 	

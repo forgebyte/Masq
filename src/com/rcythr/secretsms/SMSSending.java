@@ -2,7 +2,6 @@ package com.rcythr.secretsms;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
 
-import com.rcythr.secretsms.encryption.AES;
 import com.secretconversations.R;
 
 import android.app.Activity;

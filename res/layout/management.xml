@@ -3,14 +3,12 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-	<ListView android:id="@id/android:list"
+    
+	<ExpandableListView android:id="@id/android:list"
 		android:layout_width="fill_parent"
 		android:layout_height="0dp"
 		android:layout_weight="2"
+		android:cacheColorHint="#000000"
+		
 		android:drawSelectorOnTop="false"/>
-	<TextView android:id="@id/android:empty"
-               android:layout_width="fill_parent" 
-               android:layout_height="fill_parent"
-               android:background="#FF0000"
-               android:text="@string/no_data"/>
 </LinearLayout>

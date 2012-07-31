@@ -1,21 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <string name="recv_message">Read Encrypted SMS</string>
+    <string name="add">Add</string>
+    <string name="add_contact">Add Contact</string>
     <string name="app_name">Secret Conversations</string>
-    
+    <string name="begin">Begin</string>
+    <string name="clear_single">Clear All</string>
+    <string name="contacts">Contacts</string>
+    <string name="delete">Delete Forever</string>
+    <string name="enc_off">Keystore Encryption: Off</string>
+    <string name="enc_on">KeystoreEncryption: On</string>
+    <string name="generate">Generate</string>
+    <string name="generate_explain">Select the number of keys you wish to generate and tap Begin.\n\nThen tap and swipe wildly around the screen. As you create random data the progress bar will fill.\n\nOnce complete your contact should use Add to scan the QR codes generated. Once complete both phones will be in sync.</string>
+    <string name="generate_explain_short">Tap Begin.\n\nThen tap and swipe wildly around the screen. As you create random data the progress bar will fill.\n\nOnce complete your contact should use Add to scan the QR codes generated. Once complete both phones will be in sync.</string>
     <string name="key_manage">Key Management</string>
-    
-    <string name="send_message">Send Encrypted SMS</string>
-	<string name="recv_message">Read Encrypted SMS</string>
-    
-    <string name="send_steganograph">Send Steganograph</string>
-    <string name="recv_steganograph">Read Steganograph</string>
-    
-    <string name="send_explain">Type your full message here then hit Next. You will be redirected to your normal sms handler to send the message.</string>
-    <string name="send_next">Next</string>
-    
+    <string name="keystore_options">Keystore Options</string>
     <string name="manage_desc">Before you can send or receive encrypted messages you must setup a set of keys to use.</string>
+    <string name="move_keystore">Move Keystore</string>
+    <string name="no_data">No Data</string>
+    <string name="ok">OK</string>
+    <string name="other">Other</string>
+    <string name="perma">Permanent Key</string>
+    <string name="recv_steganograph">Read Steganograph</string>
+    <string name="remaining">remaining</string>
+    <string name="remove">Remove</string>
+    <string name="reset_keystore">Delete Keystore Forever</string>
+    <string name="send_explain">Type your full message here then hit Next. You will be redirected to your normal sms handler to send the message.</string>
+    <string name="send_message">Send Encrypted SMS</string>
+    <string name="send_next">Next</string>
+    <string name="send_steganograph">Send Steganograph</string>
+    <string name="setup">Setup</string>
+    <string name="setup_explain">The Keystore is where all of the keys used to encrypt/decrypt messages to/from contacts are stored. To keep this file secure you should setup a password for it. The default location for this file is on internal memory. You can change this in Key Management.\n\nIf you do not wish to use a password simply leave the box blank (Not Recommended).</string>
+   	<string name="spacer"> </string>
+    <string name="single">Single Use Keys</string>
     <string name="sms_desc">If you need to send a message and you want to make sure that only your recipient can read it.</string>
     <string name="stegan_desc">If you want to send a message and you want to make sure that only your recipient knows a secret message exists.</string>
-    
+    <string name="unlock">Unlock Keystore</string>
+    <string name="unlock_explain">In order to unlock the Keystore you must supply the password.</string>
 </resources>

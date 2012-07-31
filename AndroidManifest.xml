@@ -11,7 +11,8 @@
     <uses-permission android:name="android.permission.READ_MMS"/>
     
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
-	
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    
     <uses-sdk android:minSdkVersion="7" />
 
     <application
@@ -25,6 +26,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.rcythr.secretsms.keymanagement.KeyManagementActivity"
+            android:label="@string/app_name" >
+        </activity>
+        
+        <activity
+            android:name="com.rcythr.secretsms.keymanagement.GenerateActivity"
+            android:label="@string/app_name" >
         </activity>
         
         <activity

@@ -5,47 +5,47 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/manageDesc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/manage_desc" />
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/keyManage"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/key_manage" />
     
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/smsDesc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/sms_desc" />
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/sendMessage"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/send_message" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/recvMessage"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/recv_message" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/steganDesc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/stegan_desc" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/sendSteganograph"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/send_steganograph" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/recvSteganograph"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/recv_steganograph" />
