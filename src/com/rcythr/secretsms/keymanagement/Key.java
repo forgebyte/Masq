@@ -3,16 +3,13 @@ package com.rcythr.secretsms.keymanagement;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
 
 public class Key {
 	public String displayName;
 	public byte[] permanentKey;
-	public LinkedList<Byte[]> singleUseKeys;
 	
 	public Key() {
 		permanentKey = null;
-		singleUseKeys = new LinkedList<Byte[]>();
 	}
 	
 	public static Key readData(DataInputStream stream) throws IOException {
@@ -30,14 +27,6 @@ public class Key {
 			result.permanentKey = null;
 		}
 		
-		int count = stream.readInt();
-		for(int i=0; i < count; ++i) {
-			Byte[] buffer = new Byte[32];
-			for(int j=0; j < 32; ++j) {
-				buffer[j] = stream.readByte();
-			}
-			result.singleUseKeys.add(buffer);
-		}
 		return result;
 	}
 	
@@ -51,14 +40,6 @@ public class Key {
 			stream.write(permanentKey);
 		} else {
 			stream.writeBoolean(false);
-		}
-		
-		//Write out single use keys
-		stream.writeInt(singleUseKeys.size());
-		for(Byte[] array : singleUseKeys) {
-			for(Byte b : array) {
-				stream.writeByte(b);
-			}
 		}
 	}
 }

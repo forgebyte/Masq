@@ -2,52 +2,44 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:gravity="bottom"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/manageDesc"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:contentDescription="@string/masq_logo"
+        android:id="@+id/imageView1"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:gravity="center"
+        android:layout_weight="2"
+        android:src="@drawable/masq_banner" />
+    
+    <Button
+        android:id="@+id/sms"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/manage_desc" />
+        android:text="@string/sms" />
+
     <Button
         android:id="@+id/keyManage"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/key_manage" />
     
-    <TextView
-        android:id="@+id/smsDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sms_desc" />
     <Button
-        android:id="@+id/sendMessage"
+        android:id="@+id/help"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/send_message" />
-
-    <Button
-        android:id="@+id/recvMessage"
+        android:text="@string/help" />
+    
+    
+    
+        <Button
+        android:id="@+id/exit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/recv_message" />
-
-    <TextView
-        android:id="@+id/steganDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/stegan_desc" />
-
-    <Button
-        android:id="@+id/sendSteganograph"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/send_steganograph" />
-
-    <Button
-        android:id="@+id/recvSteganograph"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/recv_steganograph" />
+        android:text="@string/exit" />
     
 </LinearLayout>

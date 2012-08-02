@@ -20,19 +20,16 @@
         android:textOff="@string/enc_off"
         android:textOn="@string/enc_on" />
 
-
-
     <Button
         android:id="@+id/moveKeystore"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/move_keystore" />
+        android:text="@string/move_to_external" />
 
     <Button
         android:id="@+id/resetKeystore"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/red_button"
         android:text="@string/reset_keystore" />
 
      <TextView

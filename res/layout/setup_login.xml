@@ -2,33 +2,34 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:gravity="center"
     android:orientation="vertical" >
-
-    <ProgressBar
-        android:id="@+id/generateProgress"
-        style="?android:attr/progressBarStyleHorizontal"
+
+    <TextView
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true" />
+        android:text="@string/keystore_password"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <TextView
-        android:id="@+id/generateExplain"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/loginText"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/generateProgress"
-        android:gravity="center"
-        android:text="@string/generate_explain" />
+        android:layout_below="@+id/textView1"
+        android:ems="10"
+        android:inputType="textPassword" />
 
     <Button
-        android:id="@+id/begin"
+        android:id="@+id/login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:text="@string/begin" />
+        android:layout_below="@+id/loginText"
+        android:text="@string/login" />
 
 </RelativeLayout>

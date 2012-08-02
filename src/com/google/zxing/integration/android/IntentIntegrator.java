@@ -93,9 +93,6 @@ import android.net.Uri;
  */
 public class IntentIntegrator {
 
-  
-  private static final String TAG = IntentIntegrator.class.getSimpleName();
-
   public static final String DEFAULT_TITLE = "Install Barcode Scanner?";
   public static final String DEFAULT_MESSAGE =
       "This application requires Barcode Scanner. Would you like to install it?";
