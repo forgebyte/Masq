@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/displayText"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:text="@string/select_input"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	<ImageView
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:src="@drawable/black_white_gradient"
+	    android:contentDescription="@string/spacer"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:scaleType="fitXY"
+	    android:paddingLeft="5dp"
+	    android:paddingRight="5dp"
+	    android:paddingBottom="5dp"
+	    android:paddingTop="5dp" />
+    
+    <Button
+        android:id="@+id/generateButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/generate" />
+
+    <Button
+        android:id="@+id/scanButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add" />
+    
+    <Button
+        android:id="@+id/manualButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/input" />
+    
+    <ImageView
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:src="@drawable/black_white_gradient"
+	    android:contentDescription="@string/spacer"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:scaleType="fitXY"
+	    android:paddingLeft="5dp"
+	    android:paddingRight="5dp"
+	    android:paddingBottom="5dp"
+	    android:paddingTop="5dp" />
+    
+	<Button
+	    android:id="@+id/saveButton"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:enabled="false"
+	    android:text="@string/save" />
+
+</LinearLayout>

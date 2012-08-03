@@ -1,4 +1,4 @@
-package com.rcythr.secretsms;
+package com.rcythr.masq;
 
 import com.rcythr.masq.R;
 
@@ -9,7 +9,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-public class MainActivity extends Activity {
+/**
+ * The activity for the Main Menu
+ * @author Richard Laughlin
+ */
+public class MainMenuActivity extends Activity {
 	
     /** Called when the activity is first created. */
     @Override
@@ -20,35 +24,28 @@ public class MainActivity extends Activity {
         ((Button) findViewById(R.id.sms)).setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-				MainActivity.this.startActivity(new Intent(MainActivity.this, SMSActivity.class));
+				MainMenuActivity.this.startActivity(new Intent(MainMenuActivity.this, SMSActivity.class));
 			}
 		});
-        
-        /*((Button) findViewById(R.id.steganograph)).setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
-				
-			}
-		});*/
         
         ((Button) findViewById(R.id.keyManage)).setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-				MainActivity.this.startActivity(new Intent(MainActivity.this, KeyManagementActivity.class));
+				MainMenuActivity.this.startActivity(new Intent(MainMenuActivity.this, KeyManagementActivity.class));
 			}
 		});
         
         ((Button) findViewById(R.id.help)).setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-				MainActivity.this.startActivity(new Intent(MainActivity.this, HelpActivity.class));
+				MainMenuActivity.this.startActivity(new Intent(MainMenuActivity.this, HelpActivity.class));
 			}
 		});
         
         ((Button) findViewById(R.id.exit)).setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-				MainActivity.this.finish();
+				MainMenuActivity.this.finish();
 			}
 		});
     }

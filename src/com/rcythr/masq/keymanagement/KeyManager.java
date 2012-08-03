@@ -1,4 +1,4 @@
-package com.rcythr.secretsms.keymanagement;
+package com.rcythr.masq.keymanagement;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,13 +16,18 @@ import java.util.Map.Entry;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 
-import com.rcythr.secretsms.util.AES;
+import com.rcythr.masq.util.AES;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Environment;
 
+/**
+ * Singleton class used to store key data to the file system.
+ * 
+ * @author Richard Laughlin
+ */
 public class KeyManager {
 	
 	private static final String KEYSTORE = "KEYSTORE";
@@ -32,7 +37,6 @@ public class KeyManager {
 	private static final String SETUP_COMPLETE = "setupComplete";
 	
 	private HashMap<String, Key> lookup;
-	
 	private boolean setupComplete;
 	private boolean internalStorage;
 	private boolean passwordProtected;
@@ -40,6 +44,10 @@ public class KeyManager {
 	
 	public static KeyManager instance;
 	
+	/**
+	 * Create a new KeyManager from the information in the context
+	 * @param context the context to use
+	 */
 	public KeyManager(Context context) {
 		SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
 		internalStorage = preferences.getBoolean(USE_INTERNAL_STORAGE, true);
@@ -49,13 +57,27 @@ public class KeyManager {
 		lookup = new HashMap<String, Key>();
 	}
 	
+	/**
+	 * @return a java.io.File to the keystore location on the sdcard
+	 */
 	private File getSDCardFile() {
+		
+		//First make sure the directories exist
 		File dir = new File(Environment.getExternalStorageDirectory(), "Android/data/com.rcythr.masq/files/");
 		dir.mkdirs();
+		
+		//Return the actual location
 		return new File(dir, KEYSTORE);
 		
 	}
 	
+	/**
+	 * Returns a file in stream for a keystore. It will use the settings loaded to determine where it is.
+	 * @param context the context to use
+	 * @return the opened FileInputStream 
+	 * 
+	 * @throws FileNotFoundException if the file is not found
+	 */
 	private FileInputStream getAssociatedInFileStream(Context context) throws FileNotFoundException {
 		if(internalStorage) {
 			return context.openFileInput(KEYSTORE);
@@ -64,14 +86,28 @@ public class KeyManager {
 		}
 	}
 	
+	/**
+	 * Returns a file out stream for a keystore. It will use the settings loaded to determine where it goes.
+	 * @param context the context to use
+	 * @return the opened FileInputStream 
+	 * 
+	 * @throws FileNotFoundException if the file is not found
+	 */
 	private FileOutputStream getAssociatedOutFileStream(Context context) throws FileNotFoundException {
 		if(internalStorage) {
-			return context.openFileOutput(KEYSTORE, Context.MODE_WORLD_WRITEABLE);
+			return context.openFileOutput(KEYSTORE, Context.MODE_PRIVATE);
 		} else {
 			return new FileOutputStream(getSDCardFile());
 		}
 	}
 	
+	/**
+	 * Load a Keystore. Uses either internal or external memory depending on settings.
+	 * @param context the context to use.
+	 * 
+	 * @throws IOException if the stream is bad
+	 * @throws InvalidCipherTextException if the key or data is bad
+	 */
 	public void load(Context context) throws IOException, InvalidCipherTextException {
 		DataInputStream stream = null;
 		if(passwordProtected) {
@@ -94,6 +130,13 @@ public class KeyManager {
 		}
 	}
 	
+	/**
+	 * Saves the Keystore. Uses either internal or external memory depending on settings.
+	 * @param context the context to use
+	 * 
+	 * @throws IOException if the outstream is somehow bad or interrupted
+	 * @throws InvalidCipherTextException if the key is bad or the data is bad
+	 */
 	public void commit(Context context) throws IOException, InvalidCipherTextException {
 		//Commit Preferences
 		Editor edit = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
@@ -115,7 +158,7 @@ public class KeyManager {
 		}
 		
 		//Write everything out to the stream
-		writer.writeUTF("RCYTHR1");
+		writer.writeUTF("RCYTHR1"); //Special indicator to determine if we decrypt properly
 		writer.writeInt(lookup.size());
 		for(Entry<String, Key> entry : lookup.entrySet()) {
 			writer.writeUTF(entry.getKey());
@@ -135,17 +178,29 @@ public class KeyManager {
 		writer.close();
 	}
 
+	/**
+	 * Deletes the keystore from internal or external memory depending on settings
+	 * @param context the context to use
+	 */
 	public void delete(Context context) {
+		
+		//Perform the delete.
 		if(internalStorage) {
 			context.deleteFile(KEYSTORE);
 		} else {
 			getSDCardFile().delete();
 		}
 		
+		//Clear out shared preferences because they are not longer valid
 		SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
 		preferences.edit().clear().commit();
 	}
 	
+	/**
+	 * Move Keystore from internal to external memory or vice versa depending on settings
+	 * @param context the context to use
+	 * @return true if successful, false otherwise
+	 */
 	public boolean swap(Context context) {
 		boolean initialState = internalStorage;
 		try {
@@ -236,7 +291,7 @@ public class KeyManager {
 	/**
 	 * @param keyStoneKey the keyStoneKey to set
 	 */
-	public void setKeyStoneKey(byte[] keyStoneKey) {
+	public void setKeyStoreKey(byte[] keyStoneKey) {
 		this.keyStoneKey = keyStoneKey;
 	}
 	

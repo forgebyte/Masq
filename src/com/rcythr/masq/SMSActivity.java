@@ -1,4 +1,4 @@
-package com.rcythr.secretsms;
+package com.rcythr.masq;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -8,11 +8,11 @@ import java.util.Map.Entry;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.util.encoders.Base64;
 
-import com.rcythr.secretsms.keymanagement.Contact;
-import com.rcythr.secretsms.keymanagement.Key;
-import com.rcythr.secretsms.keymanagement.KeyManager;
-import com.rcythr.secretsms.util.AES;
 import com.rcythr.masq.R;
+import com.rcythr.masq.keymanagement.Contact;
+import com.rcythr.masq.keymanagement.Key;
+import com.rcythr.masq.keymanagement.KeyManager;
+import com.rcythr.masq.util.AES;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,6 +30,7 @@ import android.os.Bundle;
 
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.text.ClipboardManager;
 
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -49,25 +50,32 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+@SuppressWarnings("deprecation")
 public class SMSActivity extends ListActivity {
 	
 	private static final int TYPE_RECV = 1;
 	private static final int TYPE_SENT = 2;
 	
+	private EditText text;
+	private String displayName;
+	private String currentAddress;
 	private SMSListAdapter smsAdapter;
 	private ContactSpinnerAdapter contactAdapter;
 	private BroadcastReceiver receiver;
 	
-	private EditText text;
-	
-	private String displayName;
-	private String currentAddress;
-
+	/**
+	 * Sends message to phoneNumber splitting the messages at the 160 character limit.
+	 * 
+	 * The message is then added to the SMS Messaging application's database.
+	 * 
+	 * @param phoneNumber the number to send to
+	 * @param message the message to send
+	 */
     private void sendSMS(String phoneNumber, String message)
     {        
-        SmsManager sms = SmsManager.getDefault();
-        
+        //Split the message as appropriate.
         int cursor = 0;
         ArrayList<String> pieces = new ArrayList<String>();
         while(cursor < message.length()) {
@@ -88,8 +96,12 @@ public class SMSActivity extends ListActivity {
         	cursor += 158;
         }
         
+        SmsManager sms = SmsManager.getDefault();
         for(String piece : pieces) {
-	        sms.sendTextMessage(phoneNumber, null, piece, null, null);
+        	//Send the message
+        	sms.sendTextMessage(phoneNumber, null, piece, null, null);
+	        
+        	//Add it to the database
 	        ContentValues values = new ContentValues();
 	        values.put("address", phoneNumber);
 	        values.put("type", TYPE_SENT);
@@ -100,6 +112,10 @@ public class SMSActivity extends ListActivity {
         }
     }
 	
+    /**
+     * Places a received message into the SMS Messaging application's database.
+     * @param message the message
+     */
     private void receiveSMS(SmsMessage message) {
     	ContentValues values = new ContentValues();
         values.put("address", message.getOriginatingAddress());
@@ -114,7 +130,7 @@ public class SMSActivity extends ListActivity {
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	
-		setContentView(R.layout.sms);
+		setContentView(R.layout.sms_main);
 		
 		//Setup the List View
 		ListView view = getListView();
@@ -134,6 +150,10 @@ public class SMSActivity extends ListActivity {
 				TextView displayName = (TextView) view.findViewById(R.id.display_name);
 				TextView address = (TextView) view.findViewById(R.id.address);
 				
+				Spinner personSpinner = (Spinner) findViewById(R.id.personSpinner);
+				getPreferences(MODE_PRIVATE).edit().putString("currentSelectedAddress", 
+						((Contact) contactAdapter.getItem(personSpinner.getSelectedItemPosition())).address).commit();
+				
 				getListView().setSelection(getListView().getCount() - 1);
 				
 				SMSActivity.this.displayName = displayName.getText().toString();
@@ -149,7 +169,6 @@ public class SMSActivity extends ListActivity {
 		
 		text = (EditText) findViewById(R.id.smsBox);
 		
-		
 		send.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
@@ -164,22 +183,22 @@ public class SMSActivity extends ListActivity {
 						
 						byte[] clearText = message.getBytes();
 						
-						sendSMS(currentAddress, new String(Base64.encode(AES.handle(true, clearText, key.permanentKey))));
+						sendSMS(currentAddress, new String(Base64.encode(AES.handle(true, clearText, key.key))));
 						
 						smsAdapter.populateSMS(displayName, currentAddress);
 						
 					} catch (InvalidCipherTextException e) {
 						e.printStackTrace();
-						//TODO: HANDLE ME
+						Toast.makeText(SMSActivity.this, R.string.error_send, Toast.LENGTH_SHORT).show();
 					}
 				}
 			}
 		});
 		
 		contactAdapter.populate();
-		
-		if(savedInstanceState != null) {
-			personSpinner.setSelection(savedInstanceState.getInt("selectedSpinnerPosition"));
+		int savedPosition = contactAdapter.getPosition(getPreferences(MODE_PRIVATE).getString("currentSelectedAddress", ""));
+		if(savedPosition != -1) {
+			personSpinner.setSelection(savedPosition);
 		}
 		
 		receiver = new SMSBroadcastReceiver();
@@ -192,6 +211,10 @@ public class SMSActivity extends ListActivity {
         filter.setPriority(2);
         registerReceiver(receiver, filter);
 		
+        if(currentAddress != null && displayName != null) {
+        	smsAdapter.populateSMS(displayName, currentAddress);
+        }
+        
 		super.onResume();
 	}
 	
@@ -204,10 +227,7 @@ public class SMSActivity extends ListActivity {
 	
 	@Override
 	public void onSaveInstanceState(Bundle bundle) {
-		Spinner personSpinner = (Spinner) findViewById(R.id.personSpinner);
-		
-		bundle.putInt("selectedSpinnerPosition", personSpinner.getSelectedItemPosition());
-	}
+ 	}
 	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -221,6 +241,13 @@ public class SMSActivity extends ListActivity {
 		final SMSListAdapter.Message msg;
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 	    switch (item.getItemId()) {
+	    	case R.id.copy:
+	    		msg = (SMSListAdapter.Message) smsAdapter.getItem(info.position);
+	    		
+    		    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+    		    clipboard.setText(msg.message);
+    		    
+	    		return true;
 	        case R.id.edit:
 	        	msg = (SMSListAdapter.Message) smsAdapter.getItem(info.position);
 	        	
@@ -316,7 +343,7 @@ public class SMSActivity extends ListActivity {
 					message = cursor.getString(1);
 					
 					boolean beginsWithUnderscore = message.startsWith("_");
-					boolean beginsWithHypen = message.startsWith("-");
+					boolean beginsWithHypen = message.startsWith("-") && message.length() > 1;
 					boolean endsWithHypen = message.endsWith("-");
 	
 					if(beginsWithUnderscore && endsWithHypen) {
@@ -349,10 +376,10 @@ public class SMSActivity extends ListActivity {
 						}
 						
 						Key key = KeyManager.instance.getLookup().get(currentAddress);
-						if(key.permanentKey != null) {
+						if(key.key != null) {
 							try {
 								String pruned = temp.message.substring(1);
-								byte[] clearText = AES.handle(false, Base64.decode(pruned), key.permanentKey);
+								byte[] clearText = AES.handle(false, Base64.decode(pruned), key.key);
 								temp.message = new String(clearText);
 							} catch (Exception e) {
 								//Not encrypted. Use cleartext
@@ -421,9 +448,9 @@ public class SMSActivity extends ListActivity {
 						}
 						
 						Key key = KeyManager.instance.getLookup().get(currentAddress);
-						if(key.permanentKey != null) {
+						if(key.key != null) {
 							try {
-								byte[] clearText = AES.handle(false, Base64.decode(temp.message), key.permanentKey);
+								byte[] clearText = AES.handle(false, Base64.decode(temp.message), key.key);
 								temp.message = new String(clearText);
 							} catch (Exception e) {
 								//Not encrypted. Use cleartext
@@ -464,7 +491,7 @@ public class SMSActivity extends ListActivity {
 		public long getItemId(int position) {
 			return position;
 		}
-
+		
 		public View getView(int position, View view, ViewGroup parent) {
 			if(view == null) {
 				LayoutInflater inflater = context.getLayoutInflater();
@@ -499,10 +526,9 @@ public class SMSActivity extends ListActivity {
 				Contact c = new Contact();
 				Key value = entry.getValue();
 				
-				if(value != null && value.permanentKey != null) {
+				if(value != null && value.key != null) {
 					c.address = entry.getKey();
 					c.name = value.displayName;
-					c.hasPermaKey = value.permanentKey != null;
 					
 					contacts.add(c);
 				}
@@ -531,6 +557,15 @@ public class SMSActivity extends ListActivity {
 			return position;
 		}
 
+		public int getPosition(String address) {
+			for(int i=0; i < contacts.size(); ++i) {
+				if(contacts.get(i).address.equals(address)) {
+					return i;
+				}
+			}
+			return -1;
+		}
+		
 		public View getView(int position, View view, ViewGroup parent) {
 			if(view == null) {
 				LayoutInflater inflater = context.getLayoutInflater();

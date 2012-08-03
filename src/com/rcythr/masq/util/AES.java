@@ -1,6 +1,4 @@
-package com.rcythr.secretsms.util;
-
-import java.math.BigInteger;
+package com.rcythr.masq.util;
 
 import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.CipherParameters;
@@ -10,38 +8,36 @@ import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.paddings.ZeroBytePadding;
 import org.bouncycastle.crypto.params.KeyParameter;
 
+/**
+ * Utility class used to encrypt/decrypt data
+ * 
+ * @author Richard Laughlin
+ */
 public class AES {
 
-	public static String toHex(byte[] bytes) {
-	    BigInteger bi = new BigInteger(1, bytes);
-	    return String.format("%0" + (bytes.length << 1) + "X", bi);
-	}
+	/**
+	 * Designates the key size to use in bytes.
+	 * 
+	 * 16 bytes = 128 bits
+	 * 24 bytes = 192 bits
+	 * 32 bytes = 256 bits
+	 * 
+	 */
+	public static final int AES_KEY_SIZE = 32;
 	
-	public static byte[] fromHex(String s) {
-	    int len = s.length();
-	    
-	    byte[] data = new byte[len / 2];
-	    for (int i = 0; i < len; i += 2) {
-	        data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-	                             + Character.digit(s.charAt(i+1), 16));
-	    }
-	    return data;
-	}
-	
-	public static byte[] handle(boolean encrypt, byte[] input, byte[] key) throws InvalidCipherTextException {
-		
-		//16 bytes = 128 bits
-		//24 bytes = 192 bits
-		//32 bytes = 256 bits
-		
+	/**
+	 * Uses inputs to encrypt/decrypt based on the value of encrypt
+	 * @param forEncryption if true encrypt, if false decrypt
+	 * @param input the data to work with
+	 * @param key the key to use
+	 * @return the result
+	 * 
+	 * @throws InvalidCipherTextException if something goes wrong
+	 */
+	public static byte[] handle(boolean forEncryption, byte[] input, byte[] key) throws InvalidCipherTextException {
 	    CipherParameters cipherParameters = new KeyParameter(key);
-
 	    BufferedBlockCipher bufferedBlockCipher = new PaddedBufferedBlockCipher(new AESEngine(), new ZeroBytePadding());
 
-	    return process(input, bufferedBlockCipher, cipherParameters, encrypt);
-	}
-
-	private static byte[] process(byte[] input, BufferedBlockCipher bufferedBlockCipher, CipherParameters cipherParameters, boolean forEncryption) throws InvalidCipherTextException {
 	    bufferedBlockCipher.init(forEncryption, cipherParameters);
 
 	    int inputOffset = 0;

@@ -1,88 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="recv_message">Read Encrypted SMS</string>
-    
+    <string name="add">Scan</string>
     <string name="add_contact">Add Contact</string>
-    <string name="masq_logo">Masq Logo</string>
-    
-    <string name="clear_single">Clear All</string>
+    <string name="agree">I agree, Next</string>
+    <string name="app_name">Masq</string>
+    <string name="begin">Begin</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="confrimation_msg">Are you sure?</string>
     <string name="contacts">Contacts</string>
+    <string name="contacts_explain">In Masq you must first sync a shared key with a contact before you can communicate with them.\n</string>
     <string name="delete">Delete Forever</string>
+    <string name="disclaimer">\nDisclaimer:\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</string>
+    <string name="edit">Edit</string>
+    <string name="edit_explain">Edit this message locally. It will be saved unencrypted.</string>
     <string name="enc_off">Keystore Encryption: Off</string>
     <string name="enc_on">KeystoreEncryption: On</string>
-    <string name="generate">Generate</string>
-    <string name="generate_explain">Tap Begin.\n\nThen tap and swipe wildly around the screen. As you create random data the progress bar will fill.\n\nOnce complete your contact should use Add to scan the QR codes generated. Once complete both phones will be in sync.</string>
-    <string name="key_manage">Keys and Settings</string>
-    <string name="keystore_options">Keystore Options</string>
-    
-    <string name="move_to_internal">Move to Internal Storage</string>
-    <string name="move_to_external">Move to External Storage</string>
-    
-    <string name="perma">Permanent Key</string>
-    <string name="recv_steganograph">Read Steganograph</string>
-    <string name="reset_keystore">Delete Keystore Forever</string>
-    <string name="send">Send Encrypted</string>
-    <string name="steganograph">Steganograph Messaging</string>
-    <string name="setup_explain">The Keystore is where all of the keys used to encrypt/decrypt messages to/from contacts are stored.\n\nTo keep this file secure input a password:</string>
-    <string name="edit_explain">Edit this message locally. It will be saved unencrypted.</string>
-    <string name="external_storage_explain">\nBy default the keystore is kept in internal storage. To change this check below</string>
+    <string name="error_send">An error occured while sending.</string>
+    <string name="error_commit">An error occured while saving the keystore.</string>
+    <string name="exit">Exit</string>
     <string name="external_storage">Use External Storage</string>
-    <string name="contacts_explain">In Masq you must first sync a shared key with a contact before you can communicate with them.\n</string>
-    
-    <string name="how_to">How To</string>
+    <string name="generate">Generate</string>
+    <string name="generate_explain">Tap Begin.\n\nThen tap and swipe wildly around the screen. As you create random data the progress bar will fill.\n\nOnce complete your contact should use Add to scan the QR code generated. Once complete both phones will be in sync.</string>
+    <string name="help">Help</string>
     <string name="help_contacts_step1">1. Meet in person</string>
     <string name="help_contacts_step2">2. Both go to Keys and Settings -> Add Contact</string>
     <string name="help_contacts_step3">3. First person generates a QR code under the new contact.</string>
     <string name="help_contacts_step4">4. The second person scans the QR code.</string>
-    <string name="to_contact_management">To Keys and Settings</string>
-    <string name="to_main_menu">To Main Menu</string>
+    <string name="how_to">How To</string>
+    <string name="input">Manual Input</string>
+    <string name="input_desc">Input must be of the same format the generator produces. (32bytes long and Base64 encoded)</string>
+    <string name="install_title">Install Barcode Scanner?</string>
+    <string name="install_desc">This action requires Barcode Scanner. Would you like to install it?</string>
+    <string name="invalid_key">Key is of invalid format or length</string>
+    <string name="key_manage">Keys and Settings</string>
+    <string name="keystore_options">Keystore Options</string>
     <string name="keystore_password">Keystore Password</string>
     <string name="login">Login</string>
-    
-    <string name="confirmation">Confirmation</string>
-    <string name="confrimation_msg">Are you sure?</string>
-    <string name="yes">Yes</string>
+    <string name="login_failed">Login Failed</string>
+    <string name="masq_logo">Masq Logo</string>
+    <string name="me">Me</string>
+    <string name="move_error">Move aborted due to error</string>
+    <string name="move_to_external">Move to External Storage</string>
+    <string name="move_to_internal">Move to Internal Storage</string>
     <string name="no">No</string>
-    
+    <string name="ok">OK</string>
+    <string name="other">Other</string>
     <string name="password_input">Set Password</string>
     <string name="password_input_msg">Please set the new Keystore password</string>
-    
-    <string name="contact_management">Contact Management</string>
-    <string name="sms">Encrypted SMS Messaging</string>
-   	<string name="spacer"> </string>
-    <string name="single">Single Use Keys</string>
-    <string name="unlock">Unlock Keystore</string>
-    <string name="unlock_explain">In order to unlock the Keystore you must supply the password.</string>
-    
-    <string name="move_error">Move aborted due to error</string>
-    <string name="login_failed">Login Failed</string>
-    <string name="unknown_error">An error occurred.</string>
-    
+    <string name="perma">Permanent Key</string>
+    <string name="reset_keystore">Delete Keystore Forever</string>
     <string name="save">Save</string>
-    <string name="add">Scan</string>
-    <string name="app_name">Masq</string>
-    <string name="begin">Begin</string>
-    <string name="view">View</string>
-    <string name="setup">Setup</string>
-	<string name="no_data">No Data</string>
-    <string name="ok">OK</string>
-    <string name="cancel">Cancel</string>
-    <string name="other">Other</string>
-    <string name="me">Me</string>
-    <string name="edit">Edit</string>
-    <string name="remove">Remove</string>
-    <string name="next">Next</string>
-    <string name="help">Help</string>
-    <string name="exit">Exit</string>
+    <string name="send">Send Encrypted</string>
+    <string name="setup_explain">The Keystore is where all of the keys used to encrypt/decrypt messages to/from contacts are stored.\n\nTo keep this file secure input a password:</string>
+    <string name="sms">Encrypted SMS Messaging</string>
+    <string name="spacer"> </string>
+    <string name="to_contact_management">To Keys and Settings</string>
+    <string name="to_main_menu">To Main Menu</string>
+    <string name="unknown_error">An error occurred.</string>
+    <string name="view">View QR</string>
+    <string name="yes">Yes</string>
+    <string name="copy">Copy Text</string>
+    <string name="select_input">Select Input Method</string>
     
-    <string name="agree">I agree, Next</string>
-    <string name="disclaimer">\nDisclaimer:\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</string>
+    <string name="forgot">I Forgot</string>
+    <string name="forgot_msg">This will perminently delete the Keystore. Are you sure?</string>
     
     <string-array name="questions">
         <item>What is Masq?</item>
         <item>What is encryption?</item>
         <item>Is Masq legal?</item>
-        <item>What is Masq\'s export classification in the USA?</item>
         <item>How does Masq handle keys?</item>
         <item>What kind of encryption does Masq use?</item>
         <item>What is AES?</item>
@@ -97,11 +84,10 @@
     <string-array name="answers">
         <item>Masq is sms encryption software. It can be used to send/receive sms messages that can only be opened with the associated key.</item>
         <item>According to wikipedia: Encryption is the process of transforming information using an algorithm to make it unreadable to anyone except those possessing special knowledge, usually referred to as a key.</item>
-        <item>This depends on your country. Masq is legal in the United States of America. In some other countries it is legal, but you must supply the key if prompted by law enforcement. In other countries it is flat out illegal. It is your responsibility to know the laws in your own country.</item>
-        <item>At the time of writing (2 Aug 2012) Masq is approved classified under ECCN code 5D002 and approved for export under License Exception TSU.</item>
+        <item>Masq is legal in the United States of America. In some other countries it is legal, but you must supply the key if prompted by law enforcement. In other countries it is flat out illegal. It is your responsibility to know the laws in your own country.</item>
         <item>Keys are placed into a file called the Keystore. This file is then encrypted with a keystore password. It is important to keep your keystore password secure because it is the main key. All of the other keys can be obtained with the main key.</item>
         <item>Masq uses AES-256 encryption.</item>
-        <item>The Advanced Encryption Standard (AES) specifies a FIPS-approved cryptographic algorithm (Rijndael, designed by Joan Daemen and Vincent Rijmen, published in 1998) that may be used by US federal departments and agencies to cryptographically protect sensitive information [3]. TrueCrypt uses AES with 14 rounds and a 256-bit key (i.e., AES-256, published in 2001) operating in XTS mode (see the section Modes of Operation).\n\nIn June 2003, after the NSA (US National Security Agency) conducted a review and analysis of AES, the U.S. CNSS (Committee on National Security Systems) announced in [1] that the design and strength of AES-256 (and AES-192) are sufficient to protect classified information up to the Top Secret level. </item>
+        <item>The Advanced Encryption Standard (AES) specifies a FIPS-approved cryptographic algorithm (Rijndael, designed by Joan Daemen and Vincent Rijmen, published in 1998) that may be used by US federal departments and agencies to cryptographically protect sensitive information [3]. </item>
         <item>Yes. All encrypted Masq messages begin with an underscore ( _ ). For messages longer than 160 characters the messages are ended with a hypen ( - ).\n\nWhat if i send messages that falsely match the Masq signature?\nMasq will attempt to decrypt these messages and will result in "gibberish".</item>
         <item>Yes! This is encouraged for security\'s sake. However, Messages sent/received with an old key will no longer be readable. Instead they will be displayed as "gibberish".</item>
         <item>Yes. Disable and re-enable encryption in the "Keys and Settings".</item>

@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.rcythr.masq.R;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -93,12 +95,6 @@ import android.net.Uri;
  */
 public class IntentIntegrator {
 
-  public static final String DEFAULT_TITLE = "Install Barcode Scanner?";
-  public static final String DEFAULT_MESSAGE =
-      "This application requires Barcode Scanner. Would you like to install it?";
-  public static final String DEFAULT_YES = "Yes";
-  public static final String DEFAULT_NO = "No";
-
   private static final String BS_PACKAGE = "com.google.zxing.client.android";
 
   // supported barcode formats
@@ -128,10 +124,10 @@ public class IntentIntegrator {
   
   public IntentIntegrator(Activity activity) {
     this.activity = activity;
-    title = DEFAULT_TITLE;
-    message = DEFAULT_MESSAGE;
-    buttonYes = DEFAULT_YES;
-    buttonNo = DEFAULT_NO;
+    title = activity.getString(R.string.install_title);
+    message = activity.getString(R.string.install_desc);
+    buttonYes = activity.getString(R.string.yes);
+    buttonNo = activity.getString(R.string.no);
     targetApplications = TARGET_ALL_KNOWN;
   }
   

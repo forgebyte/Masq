@@ -1,4 +1,4 @@
-package com.rcythr.secretsms;
+package com.rcythr.masq;
 
 import com.rcythr.masq.R;
 
@@ -11,24 +11,35 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+/**
+ * An activity for displaying FAQ information to the user.
+ * @author Richard Laughlin
+ */
 public class HelpActivity extends ExpandableListActivity {
 
 	@Override
 	public void onCreate(Bundle instanceData) {
 		super.onCreate(instanceData);
-		setContentView(R.layout.help);
+		setContentView(R.layout.help_main);
 		
+		//Get the information from the res/values
 		String[] questions = getResources().getStringArray(R.array.questions);
 		String[] answers = getResources().getStringArray(R.array.answers);
 		
+		//Setup the adapter
 		getExpandableListView().setAdapter(new HelpAdapter(this, questions, answers));
 	}
 	
+	/**
+	 * Adapter for displaying FAQ information
+	 * @author Richard Laughlin
+	 *
+	 */
 	private static class HelpAdapter extends BaseExpandableListAdapter {
 
 		private Activity context;
-		String[] questions;
-		String[] answers;
+		private String[] questions;
+		private String[] answers;
 		
 		public HelpAdapter(Activity context, String[] questions, String[] answers) {
 			assert questions.length == answers.length;

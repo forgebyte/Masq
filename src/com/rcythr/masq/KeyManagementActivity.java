@@ -1,26 +1,23 @@
-package com.rcythr.secretsms;
+package com.rcythr.masq;
 
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map.Entry;
 
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.util.encoders.Base64;
 
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-import com.rcythr.secretsms.GenerateActivity.GeneratedData;
-import com.rcythr.secretsms.keymanagement.Contact;
-import com.rcythr.secretsms.keymanagement.Key;
-import com.rcythr.secretsms.keymanagement.KeyManager;
-import com.rcythr.secretsms.util.Dialogs;
 import com.rcythr.masq.R;
+import com.rcythr.masq.keymanagement.Contact;
+import com.rcythr.masq.keymanagement.Key;
+import com.rcythr.masq.keymanagement.KeyManager;
+import com.rcythr.masq.util.Dialogs;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ExpandableListActivity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,23 +41,24 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
+/**
+ * Manages the Keystore and Contacts
+ * @author Richard Laughlin
+ */
 @SuppressWarnings("deprecation")
 public class KeyManagementActivity extends ExpandableListActivity {
 	
-	public static final int GENERATE_PERMA_KEY_RESULT = 1;
-	public static final int GENERATE_KEYS_RESULT = 2;
-	public static final int SELECT_CONTACT = 3;
-	public static final int SCAN_PERMA_CODE = 4;
-	public static final int SCAN_SINGLE_CODE = 5;
+	public static final int SELECT_CONTACT = 1;
+	public static final int SETUP_KEY = 2;
 	
 	private KeyManagementAdapter adapter;
 	
-	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.management);	
+    	setContentView(R.layout.management_main);	
 		
+    	//Inflate the header so we can play with the buttons
     	LayoutInflater inf = (LayoutInflater) this.getLayoutInflater();
 		View headerView = inf.inflate(R.layout.management_header, null);
     	
@@ -87,7 +85,7 @@ public class KeyManagementActivity extends ExpandableListActivity {
 								try {
 									MessageDigest md = MessageDigest.getInstance("SHA-256");
 									md.update(value.getBytes("UTF-8"));
-									KeyManager.instance.setKeyStoneKey(md.digest());
+									KeyManager.instance.setKeyStoreKey(md.digest());
 									KeyManager.instance.setPasswordProtected(true);
 									KeyManager.instance.commit(KeyManagementActivity.this);
 									return;
@@ -138,7 +136,7 @@ public class KeyManagementActivity extends ExpandableListActivity {
     	resetKeystore.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				Dialogs.showConfirmation(KeyManagementActivity.this, new DialogInterface.OnClickListener() {
+				Dialogs.showConfirmation(KeyManagementActivity.this, R.string.confrimation_msg, new DialogInterface.OnClickListener() {
 					
 					public void onClick(DialogInterface dialog, int which) {
 						Context context = KeyManagementActivity.this;
@@ -164,15 +162,14 @@ public class KeyManagementActivity extends ExpandableListActivity {
 	        
 	    });
 	    
+	    //Add the new header to the list view
 	    this.getExpandableListView().addHeaderView(headerView);
 	    
+	    //Setup the adapter 
 	    adapter = new KeyManagementAdapter(this);
-	    
-	    if(savedInstanceState != null) {
-	    	adapter.pendingRequestContact = savedInstanceState.getString("pendingRequestContact");
-	    }
-	    
 		this.setListAdapter(adapter);
+		
+		//Load the adapter
 		adapter.populate();
 	}
 	
@@ -180,97 +177,75 @@ public class KeyManagementActivity extends ExpandableListActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
             switch(requestCode) {
-            case GENERATE_PERMA_KEY_RESULT:
-            	if(resultCode == Activity.RESULT_OK){
-            		GeneratedData generatedData = (GeneratedData) data.getSerializableExtra("data");
-            		
-            		Key key = KeyManager.instance.getLookup().get(adapter.pendingRequestContact);
-            		key.permanentKey = generatedData.data;
-            		
-            		try {
-						KeyManager.instance.commit(this);
-						adapter.populate();
-					} catch (InvalidCipherTextException e) {
-						e.printStackTrace();
-						//TODO: HANDLE ME
-					} catch (IOException e) {
-						e.printStackTrace();
-						//TODO: HANDLE ME
-					}
-            		
-            		//Display the QR code
-            		(new IntentIntegrator(this)).shareText(new String(Base64.encode(key.permanentKey)));
-            	}
-            	break;
             case SELECT_CONTACT:
             	if(resultCode == Activity.RESULT_OK) {
+            		
+            		//Run the contact Data query
 	        		Uri contactData = data.getData();
-	                Cursor c =  managedQuery(contactData, null, null, null, null);
-	                startManagingCursor(c);
-	                if (c.moveToFirst()) {
-	                	String name = c.getString(c.getColumnIndexOrThrow(People.NAME));  
-	                	String number = c.getString(c.getColumnIndexOrThrow(People.NUMBER));
-	                	
-	                	number = number.replaceAll("[^0-9]", "");
-	                	
-	                	Key key = new Key();
-	                	key.displayName = name;
-	                	
-	                	if(KeyManager.instance.getLookup().get(number) == null) {
-		                	KeyManager.instance.getLookup().put(number, key);
-		                	try {
-								KeyManager.instance.commit(KeyManagementActivity.this);
-							} catch (InvalidCipherTextException e) {
-								e.printStackTrace();
-								//TODO: HANDLE ME
-							} catch (IOException e) {
-								e.printStackTrace();
-								//TODO: HANDLE ME
-							}
-		                	adapter.populate();
-	                	}
-	                }
+	        		ContentResolver contentResolver = getContentResolver();
+	        		Cursor c = contentResolver.query(contactData, null, null, null, null);
+	    			try {
+		                if (c.moveToFirst()) {
+		                	//Get the information we need
+		                	String name = c.getString(c.getColumnIndexOrThrow(People.NAME));  
+		                	String address = c.getString(c.getColumnIndexOrThrow(People.NUMBER));
+		                	
+		                	//Clean the address of garbage
+		                	address = address.replaceAll("[^0-9]", "");
+		                	
+		                	//Setup an intent to create a new contact
+		                	Intent intent = new Intent(this, NewContactActivity.class);
+							intent.putExtra("address", address);
+							intent.putExtra("name", name);
+							this.startActivityForResult(intent, SETUP_KEY);
+		                }
+	    			} finally {
+	    				c.close();
+	    			}
             	}
 	            break;
-            case SCAN_PERMA_CODE:
+            case SETUP_KEY:
             	if(resultCode == Activity.RESULT_OK) {
-            		IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+            		//Get information back from the NewContactActivity
+            		String address = data.getStringExtra("address");
+            		String name = data.getStringExtra("name");
+            		byte[] key = data.getByteArrayExtra("key");
             		
-            		Key key = KeyManager.instance.getLookup().get(adapter.pendingRequestContact);
-            		key.permanentKey = Base64.decode(result.getContents());
-            		
-            		try {
+            		//Create the new contact and fill in the data
+            		Key contact = new Key();
+            		contact.displayName = name;
+            		contact.key = key;
+                	
+            		//Add the contact
+                	KeyManager.instance.getLookup().put(address, contact);
+                	try {
+                		//Commit it to the db
 						KeyManager.instance.commit(this);
-						adapter.populate();
-					} catch (InvalidCipherTextException e) {
+					} catch (Exception e) {
 						e.printStackTrace();
-						//TODO: HANDLE ME
-					} catch (IOException e) {
-						e.printStackTrace();
-						//TODO: HANDLE ME
+						Toast.makeText(this, "An error occured while saving the keystore.", Toast.LENGTH_SHORT);
 					}
-            		
-            	} else {
-            		adapter.pendingRequestContact = null;
+                	
+                	//Re-Populate the listing
+                	adapter.populate();
             	}
             	break;
             }
         }
     }
-    
-	@Override
-	public void onSaveInstanceState(Bundle bundle) {
-		bundle.putString("pendingRequestContact", adapter.pendingRequestContact);
-	}
 
 	@Override
 	public void onResume(){
 		super.onResume();
 	}
 	
+	/**
+	 * An adapter that displays contacts
+	 * @author Richard Laughlin
+	 */
 	private static class KeyManagementAdapter extends BaseExpandableListAdapter {
 
-		public abstract class ClickListener implements OnClickListener {
+		private abstract class ClickListener implements OnClickListener {
 			protected Contact contact;
 			
 			public ClickListener(Contact contact) {
@@ -283,26 +258,26 @@ public class KeyManagementActivity extends ExpandableListActivity {
 		private KeyManagementActivity context;
 		private ArrayList<Contact> contacts = new ArrayList<Contact>();
 		
-		public String pendingRequestContact = null;
-		
 		public KeyManagementAdapter(KeyManagementActivity context) {
 			this.context = context;
 		}
 		
 		public void populate() {
+			//Clear the contacts to avoid duplicates
 			contacts.clear();
 			
+			//Load the contacts from the KeyManager map into the list
 			for(Entry<String, Key> entry : KeyManager.instance.getLookup().entrySet()) {
 				Contact c = new Contact();
 				Key value = entry.getValue();
 				
 				c.address = entry.getKey();
 				c.name = value.displayName;
-				c.hasPermaKey = value.permanentKey != null;
 				
 				contacts.add(c);
 			}
 			
+			//Sort the list in alphabetical order
 			java.util.Collections.sort(contacts, new Comparator<Contact>() {
 
 				public int compare(Contact arg0, Contact arg1) {
@@ -311,6 +286,7 @@ public class KeyManagementActivity extends ExpandableListActivity {
 				
 			});
 			
+			//Notify to update the view
 			this.notifyDataSetChanged();
 		}
 		
@@ -329,33 +305,41 @@ public class KeyManagementActivity extends ExpandableListActivity {
 				view = inf.inflate(R.layout.management_child, null);
 			}
 			
-			Button genPerma = (Button) view.findViewById(R.id.genPerma);
-			genPerma.setOnClickListener(new ClickListener(contact) {
+			Button edit = (Button) view.findViewById(R.id.edit);
+			edit.setOnClickListener(new ClickListener(contact) {
 
 				public void onClick(View v) {
-					Intent intent = new Intent(context, GenerateActivity.class);
-					pendingRequestContact = contact.address;
-					intent.putExtra("count", 1);
-					context.startActivityForResult(intent, KeyManagementActivity.GENERATE_PERMA_KEY_RESULT);
+					Intent intent = new Intent(context, NewContactActivity.class);
+					intent.putExtra("address", contact.address);
+					intent.putExtra("name", contact.name);
+					intent.putExtra("key", KeyManager.instance.getLookup().get(contact.address).key);
+					context.startActivityForResult(intent, SETUP_KEY);
 				}
 				
+			});
+			
+			Button viewButton = (Button) view.findViewById(R.id.view);
+			viewButton.setOnClickListener(new ClickListener(contact) {
+				public void onClick(View v) {
+					Key key = KeyManager.instance.getLookup().get(contact.address);
+					
+					//Display the QR code
+            		(new IntentIntegrator(context)).shareText(new String(Base64.encode(key.key)));
+				}
 			});
 			
 			Button delete = (Button) view.findViewById(R.id.delete);
 			delete.setOnClickListener(new ClickListener(contact) {
 				public void onClick(View v) {
-					Dialogs.showConfirmation(context, new DialogInterface.OnClickListener() {
+					Dialogs.showConfirmation(context, R.string.confrimation_msg, new DialogInterface.OnClickListener() {
 						
 						public void onClick(DialogInterface dialog, int which) {
 							KeyManager.instance.getLookup().remove(contact.address);
 							try {
 								KeyManager.instance.commit(context);
-							} catch (InvalidCipherTextException e) {
+							} catch (Exception e) {
 								e.printStackTrace();
-								//TODO: HANDLE ME
-							} catch (IOException e) {
-								e.printStackTrace();
-								//TODO: HANDLE ME
+								Toast.makeText(context, R.string.error_commit, Toast.LENGTH_SHORT).show();
 							}
 							populate();
 						}
@@ -363,26 +347,7 @@ public class KeyManagementActivity extends ExpandableListActivity {
 				}
 			});
 			
-			Button addButton = (Button) view.findViewById(R.id.addPerma);
-			addButton.setOnClickListener(new ClickListener(contact) {
-				public void onClick(View v) {
-					IntentIntegrator integrator = new IntentIntegrator(context);
-					pendingRequestContact = contact.address;
-				    integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES, KeyManagementActivity.SCAN_PERMA_CODE);
-				}
-			});
-			
-			Button removeButton = (Button) view.findViewById(R.id.viewPerma);
-			removeButton.setOnClickListener(new ClickListener(contact) {
-				public void onClick(View v) {
-					Key key = KeyManager.instance.getLookup().get(contact.address);
-					
-					//Display the QR code
-            		(new IntentIntegrator(context)).shareText(new String(Base64.encode(key.permanentKey)));
-				}
-			});
-			
-			removeButton.setEnabled(contact.hasPermaKey);
+
 			
 			return view;
 		}
