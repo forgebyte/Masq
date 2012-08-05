@@ -31,6 +31,7 @@
 	        android:layout_weight="10"
 	        android:ems="10"
 	        android:enabled="false"
+	        android:hint="@string/send_hint"
 	        android:inputType="textMultiLine" >
 	
 	        <requestFocus />

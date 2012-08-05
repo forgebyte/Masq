@@ -191,6 +191,10 @@ public class SMSActivity extends ListActivity {
 		
 		text = (EditText) findViewById(R.id.smsBox);
 		
+		if(savedInstanceState != null) {
+			text.setText(savedInstanceState.getString("textField"));
+		}
+		
 		send.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
@@ -249,6 +253,7 @@ public class SMSActivity extends ListActivity {
 	
 	@Override
 	public void onSaveInstanceState(Bundle bundle) {
+		bundle.putString("textField", text.getText().toString());
  	}
 	
 	@Override

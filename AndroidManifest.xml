@@ -36,6 +36,11 @@
             android:label="@string/app_name" >
         </activity>
         
+        <activity 
+            android:name="com.rcythr.masq.DisplayContactsActivity"
+            android:label="@string/app_name">
+        </activity>
+        
         <activity
             android:name="com.rcythr.masq.NewContactActivity"
             android:label="@string/app_name" >

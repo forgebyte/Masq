@@ -69,7 +69,6 @@ public class SetupActivity extends Activity {
 					}
 					
 					KeyManager.getInstance().setInternalStorage(!external.isChecked());
-					KeyManager.getInstance().commit(SetupActivity.this);
 					
 					handleHelpContacts();
 					
@@ -97,7 +96,6 @@ public class SetupActivity extends Activity {
 		toMainMenu.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-				SetupActivity.this.startActivity(new Intent(SetupActivity.this, MainMenuActivity.class));
 				finish();
 			}
 		});
@@ -118,7 +116,6 @@ public class SetupActivity extends Activity {
 					KeyManager.getInstance().setKeyStoreKey(md.digest());
 					KeyManager.getInstance().load(SetupActivity.this);
 					
-					SetupActivity.this.startActivity(new Intent(SetupActivity.this, MainMenuActivity.class));
 					finish();
 					
 				} catch(Exception e) {
@@ -153,6 +150,19 @@ public class SetupActivity extends Activity {
         	finish();
         }
 		
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		
+		try {
+    		//Commit it to the db
+    		KeyManager.getInstance().commit(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Toast.makeText(this, "An error occured while saving the keystore.", Toast.LENGTH_SHORT);
+		}
 	}
 	
 }

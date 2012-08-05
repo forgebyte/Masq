@@ -51,7 +51,8 @@
     <string name="perma">Permanent Key</string>
     <string name="reset_keystore">Delete Keystore Forever</string>
     <string name="save">Save</string>
-    <string name="send">Send Encrypted</string>
+    <string name="send_hint">Secret message here&#8230;</string>
+    <string name="send">Send</string>
     <string name="setup_explain">The Keystore is where all of the keys used to encrypt/decrypt messages to/from contacts are stored.\n\nTo keep this file secure input a password:</string>
     <string name="sms">Encrypted SMS Messaging</string>
     <string name="spacer"> </string>

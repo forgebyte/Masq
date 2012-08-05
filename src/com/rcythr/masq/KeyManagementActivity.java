@@ -110,7 +110,6 @@ public class KeyManagementActivity extends ExpandableListActivity {
 									md.update(value.getBytes("UTF-8"));
 									KeyManager.getInstance().setKeyStoreKey(md.digest());
 									KeyManager.getInstance().setPasswordProtected(true);
-									KeyManager.getInstance().commit(KeyManagementActivity.this);
 									return;
 								} catch(Exception e) {
 									e.printStackTrace();
@@ -130,13 +129,7 @@ public class KeyManagementActivity extends ExpandableListActivity {
 					
 					alert.show();
 				} else {
-					try {
-						KeyManager.getInstance().setPasswordProtected(false);
-						KeyManager.getInstance().commit(KeyManagementActivity.this);
-					} catch(Exception e) {
-						e.printStackTrace();
-						Toast.makeText(KeyManagementActivity.this, R.string.unknown_error, Toast.LENGTH_SHORT).show();
-					}
+					KeyManager.getInstance().setPasswordProtected(false);
 				}
 			}
 		});
@@ -179,7 +172,7 @@ public class KeyManagementActivity extends ExpandableListActivity {
 	    addContact.setOnClickListener( new OnClickListener() {
 	    	
 	        public void onClick(View v) {
-				Intent intent = new Intent(Intent.ACTION_PICK, Contacts.Phones.CONTENT_URI);
+				Intent intent = new Intent(KeyManagementActivity.this, DisplayContactsActivity.class);
 	            startActivityForResult(intent, SELECT_CONTACT);
 	        }
 	        
@@ -203,28 +196,18 @@ public class KeyManagementActivity extends ExpandableListActivity {
             case SELECT_CONTACT:
             	if(resultCode == Activity.RESULT_OK) {
             		
-            		//Run the contact Data query
-	        		Uri contactData = data.getData();
-	        		ContentResolver contentResolver = getContentResolver();
-	        		Cursor c = contentResolver.query(contactData, null, null, null, null);
-	    			try {
-		                if (c.moveToFirst()) {
-		                	//Get the information we need
-		                	String name = c.getString(c.getColumnIndexOrThrow(People.NAME));  
-		                	String address = c.getString(c.getColumnIndexOrThrow(People.NUMBER));
-		                	
-		                	//Clean the address of garbage
-		                	address = address.replaceAll("[^0-9]", "");
-		                	
-		                	//Setup an intent to create a new contact
-		                	Intent intent = new Intent(this, NewContactActivity.class);
-							intent.putExtra("address", address);
-							intent.putExtra("name", name);
-							this.startActivityForResult(intent, SETUP_KEY);
-		                }
-	    			} finally {
-	    				c.close();
-	    			}
+	            	//Get the information we need
+	            	String name = data.getStringExtra("name");  
+	            	String address = data.getStringExtra("address");
+	            	
+	            	//Clean the address of garbage
+	            	address = address.replaceAll("[^0-9]", "");
+	            	
+	            	//Setup an intent to create a new contact
+	            	Intent intent = new Intent(this, NewContactActivity.class);
+					intent.putExtra("address", address);
+					intent.putExtra("name", name);
+					this.startActivityForResult(intent, SETUP_KEY);
             	}
 	            break;
             case SETUP_KEY:
@@ -241,13 +224,7 @@ public class KeyManagementActivity extends ExpandableListActivity {
                 	
             		//Add the contact
                 	KeyManager.getInstance().getLookup().put(address, contact);
-                	try {
-                		//Commit it to the db
-						KeyManager.getInstance().commit(this);
-					} catch (Exception e) {
-						e.printStackTrace();
-						Toast.makeText(this, "An error occured while saving the keystore.", Toast.LENGTH_SHORT);
-					}
+                	
                 	
                 	//Re-Populate the listing
                 	adapter.populate();
@@ -260,6 +237,18 @@ public class KeyManagementActivity extends ExpandableListActivity {
 	@Override
 	public void onResume(){
 		super.onResume();
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		try {
+    		//Commit it to the db
+    		KeyManager.getInstance().commit(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Toast.makeText(this, "An error occured while saving the keystore.", Toast.LENGTH_SHORT);
+		}
 	}
 	
 	/**
@@ -358,12 +347,6 @@ public class KeyManagementActivity extends ExpandableListActivity {
 						
 						public void onClick(DialogInterface dialog, int which) {
 							KeyManager.getInstance().getLookup().remove(contact.address);
-							try {
-								KeyManager.getInstance().commit(context);
-							} catch (Exception e) {
-								e.printStackTrace();
-								Toast.makeText(context, R.string.error_commit, Toast.LENGTH_SHORT).show();
-							}
 							populate();
 						}
 					});
