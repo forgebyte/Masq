@@ -17,6 +17,7 @@
 package com.rcythr.masq;
 
 import com.rcythr.masq.R;
+import com.rcythr.masq.keymanagement.KeyManager;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,6 +25,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 /**
  * The activity for the Main Menu
@@ -35,6 +37,13 @@ public class MainMenuActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        try {
+			KeyManager.getInstance().init(this);
+		} catch (Exception e) {
+			Toast.makeText(this, R.string.unknown_error, Toast.LENGTH_LONG);
+		}
+        
         setContentView(R.layout.main);
         
         ((Button) findViewById(R.id.sms)).setOnClickListener(new OnClickListener() {

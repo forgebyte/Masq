@@ -145,7 +145,13 @@ public class SMSActivity extends ListActivity {
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-	
+		
+		try {
+			KeyManager.getInstance().init(this);
+		} catch (Exception e) {
+			Toast.makeText(this, R.string.unknown_error, Toast.LENGTH_LONG);
+		}
+		
 		setContentView(R.layout.sms_main);
 		
 		//Setup the List View
@@ -193,7 +199,7 @@ public class SMSActivity extends ListActivity {
 					text.setText("");
 					
 					//Get the proper key
-					Key key = KeyManager.instance.getLookup().get(currentAddress);
+					Key key = KeyManager.getInstance().getLookup().get(currentAddress);
 					
 					try {
 						
@@ -391,7 +397,7 @@ public class SMSActivity extends ListActivity {
 							temp.sender = context.getString(R.string.me);
 						}
 						
-						Key key = KeyManager.instance.getLookup().get(currentAddress);
+						Key key = KeyManager.getInstance().getLookup().get(currentAddress);
 						if(key.key != null) {
 							try {
 								String pruned = temp.message.substring(1);
@@ -463,7 +469,7 @@ public class SMSActivity extends ListActivity {
 							}
 						}
 						
-						Key key = KeyManager.instance.getLookup().get(currentAddress);
+						Key key = KeyManager.getInstance().getLookup().get(currentAddress);
 						if(key.key != null) {
 							try {
 								byte[] clearText = AES.handle(false, Base64.decode(temp.message), key.key);
@@ -538,7 +544,7 @@ public class SMSActivity extends ListActivity {
 		public void populate() {
 			contacts.clear();
 			
-			for(Entry<String, Key> entry : KeyManager.instance.getLookup().entrySet()) {
+			for(Entry<String, Key> entry : KeyManager.getInstance().getLookup().entrySet()) {
 				Contact c = new Contact();
 				Key value = entry.getValue();
 				

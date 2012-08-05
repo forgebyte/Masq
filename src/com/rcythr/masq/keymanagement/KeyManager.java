@@ -32,9 +32,12 @@ import java.util.Map.Entry;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 
+import com.rcythr.masq.SetupActivity;
 import com.rcythr.masq.util.AES;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Environment;
@@ -56,21 +59,35 @@ public class KeyManager {
 	private boolean setupComplete;
 	private boolean internalStorage;
 	private boolean passwordProtected;
-	private byte[] keyStoneKey;
+	private byte[] keyStoreKey;
 	
-	public static KeyManager instance;
+	private boolean storeLoaded = false;
+	
+	private static KeyManager instance = new KeyManager();
+	public static KeyManager getInstance() {
+		return instance;
+	}
 	
 	/**
 	 * Create a new KeyManager from the information in the context
-	 * @param context the context to use
 	 */
-	public KeyManager(Context context) {
-		SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
-		internalStorage = preferences.getBoolean(USE_INTERNAL_STORAGE, true);
-		passwordProtected = preferences.getBoolean(PASSWORD_PROTECTED, true);
-		setupComplete = preferences.getBoolean(SETUP_COMPLETE, false);
-		
+	protected KeyManager() {
 		lookup = new HashMap<String, Key>();
+	}
+	
+	public void init(Activity context) throws InvalidCipherTextException, IOException {
+		if(!storeLoaded) {
+			SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+			internalStorage = preferences.getBoolean(USE_INTERNAL_STORAGE, true);
+			passwordProtected = preferences.getBoolean(PASSWORD_PROTECTED, true);
+			setupComplete = preferences.getBoolean(SETUP_COMPLETE, false);
+			if(passwordProtected) {
+				Intent intent = new Intent(context, SetupActivity.class);
+				context.startActivity(intent);
+			} else {
+				load(context);
+			}
+		}
 	}
 	
 	/**
@@ -125,9 +142,10 @@ public class KeyManager {
 	 * @throws InvalidCipherTextException if the key or data is bad
 	 */
 	public void load(Context context) throws IOException, InvalidCipherTextException {
+		
 		DataInputStream stream = null;
 		if(passwordProtected) {
-			byte[] data = AES.handle(false, IOUtils.toByteArray(getAssociatedInFileStream(context)), keyStoneKey);
+			byte[] data = AES.handle(false, IOUtils.toByteArray(getAssociatedInFileStream(context)), keyStoreKey);
 			stream = new DataInputStream(new ByteArrayInputStream(data));
 		} else {
 			stream = new DataInputStream(getAssociatedInFileStream(context));
@@ -144,6 +162,8 @@ public class KeyManager {
 		} else {
 			throw new IOException("Bad Format");
 		}
+		
+		storeLoaded = true;
 	}
 	
 	/**
@@ -187,7 +207,7 @@ public class KeyManager {
 		//If we're password protecting we still need to encrypt and output to file
 		if(passwordProtected) {
 			OutputStream finalOut = getAssociatedOutFileStream(context);
-			finalOut.write(AES.handle(true, output.toByteArray(), keyStoneKey));
+			finalOut.write(AES.handle(true, output.toByteArray(), keyStoreKey));
 			finalOut.close();
 		}
 		
@@ -301,14 +321,14 @@ public class KeyManager {
 	 * @return the keyStoneKey
 	 */
 	public byte[] getKeyStoneKey() {
-		return keyStoneKey;
+		return keyStoreKey;
 	}
 
 	/**
 	 * @param keyStoneKey the keyStoneKey to set
 	 */
 	public void setKeyStoreKey(byte[] keyStoneKey) {
-		this.keyStoneKey = keyStoneKey;
+		this.keyStoreKey = keyStoneKey;
 	}
 	
 	

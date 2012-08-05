@@ -39,8 +39,6 @@ import android.widget.Toast;
  */
 public class SetupActivity extends Activity {
 	
-	private int failedLogins = 0;
-	
 	@Override
 	public void onBackPressed() {
 		//Disable Back Button
@@ -64,14 +62,14 @@ public class SetupActivity extends Activity {
 						MessageDigest md;
 						md = MessageDigest.getInstance("SHA-256");
 						md.update(text.getBytes("UTF-8"));
-						KeyManager.instance.setKeyStoreKey(md.digest());
-						KeyManager.instance.setPasswordProtected(true);
+						KeyManager.getInstance().setKeyStoreKey(md.digest());
+						KeyManager.getInstance().setPasswordProtected(true);
 					} else {
-						KeyManager.instance.setPasswordProtected(false);
+						KeyManager.getInstance().setPasswordProtected(false);
 					}
 					
-					KeyManager.instance.setInternalStorage(!external.isChecked());
-					KeyManager.instance.commit(SetupActivity.this);
+					KeyManager.getInstance().setInternalStorage(!external.isChecked());
+					KeyManager.getInstance().commit(SetupActivity.this);
 					
 					handleHelpContacts();
 					
@@ -117,17 +115,14 @@ public class SetupActivity extends Activity {
 				try {
 					MessageDigest md = MessageDigest.getInstance("SHA-256");
 					md.update(loginText.getText().toString().getBytes("UTF-8")); // Change this to "UTF-16" if needed
-					KeyManager.instance.setKeyStoreKey(md.digest());
-					KeyManager.instance.load(SetupActivity.this);
+					KeyManager.getInstance().setKeyStoreKey(md.digest());
+					KeyManager.getInstance().load(SetupActivity.this);
 					
 					SetupActivity.this.startActivity(new Intent(SetupActivity.this, MainMenuActivity.class));
 					finish();
 					
 				} catch(Exception e) {
 					Toast.makeText(SetupActivity.this, R.string.login_failed, Toast.LENGTH_SHORT).show();
-					if(failedLogins++ >= 5) {
-						finish();
-					}
 				}
 			}
 		});
@@ -139,7 +134,7 @@ public class SetupActivity extends Activity {
 				Dialogs.showConfirmation(SetupActivity.this, R.string.forgot_msg, new DialogInterface.OnClickListener() {
 					
 					public void onClick(DialogInterface dialog, int which) {
-						KeyManager.instance.delete(SetupActivity.this);
+						KeyManager.getInstance().delete(SetupActivity.this);
 						handleNewSetup();
 					}
 				});
@@ -150,21 +145,12 @@ public class SetupActivity extends Activity {
 	@Override
 	public void onCreate(Bundle instanceState) {
 		super.onCreate(instanceState);
-		
-		KeyManager.instance = new KeyManager(this);
-		
-		if(!KeyManager.instance.isSetupComplete()) {
+		if(!KeyManager.getInstance().isSetupComplete()) {
 			handleNewSetup();
-        } else if(KeyManager.instance.isPasswordProtected()) {
+        } else if(KeyManager.getInstance().isPasswordProtected()) {
         	handleLogin();
         } else {
-        	try {
-				KeyManager.instance.load(this);
-				SetupActivity.this.startActivity(new Intent(SetupActivity.this, MainMenuActivity.class));
-				finish();
-			} catch (Exception e) {
-				handleNewSetup();
-			}
+        	finish();
         }
 		
 	}

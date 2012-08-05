@@ -72,6 +72,13 @@ public class KeyManagementActivity extends ExpandableListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
+    	
+    	try {
+			KeyManager.getInstance().init(this);
+		} catch (Exception e) {
+			Toast.makeText(this, R.string.unknown_error, Toast.LENGTH_LONG);
+		}
+    	
     	setContentView(R.layout.management_main);	
 		
     	//Inflate the header so we can play with the buttons
@@ -79,7 +86,7 @@ public class KeyManagementActivity extends ExpandableListActivity {
 		View headerView = inf.inflate(R.layout.management_header, null);
     	
     	final ToggleButton toggleEncryption = (ToggleButton) headerView.findViewById(R.id.encryption_toggle);
-    	toggleEncryption.setChecked(KeyManager.instance.isPasswordProtected());
+    	toggleEncryption.setChecked(KeyManager.getInstance().isPasswordProtected());
     	toggleEncryption.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -101,22 +108,22 @@ public class KeyManagementActivity extends ExpandableListActivity {
 								try {
 									MessageDigest md = MessageDigest.getInstance("SHA-256");
 									md.update(value.getBytes("UTF-8"));
-									KeyManager.instance.setKeyStoreKey(md.digest());
-									KeyManager.instance.setPasswordProtected(true);
-									KeyManager.instance.commit(KeyManagementActivity.this);
+									KeyManager.getInstance().setKeyStoreKey(md.digest());
+									KeyManager.getInstance().setPasswordProtected(true);
+									KeyManager.getInstance().commit(KeyManagementActivity.this);
 									return;
 								} catch(Exception e) {
 									e.printStackTrace();
 								}
 							} 
-							KeyManager.instance.setPasswordProtected(false);
+							KeyManager.getInstance().setPasswordProtected(false);
 							toggleEncryption.setChecked(false);
 						}
 					});
 					
 					alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
-							KeyManager.instance.setPasswordProtected(false);
+							KeyManager.getInstance().setPasswordProtected(false);
 							toggleEncryption.setChecked(false);
 						}
 					});
@@ -124,8 +131,8 @@ public class KeyManagementActivity extends ExpandableListActivity {
 					alert.show();
 				} else {
 					try {
-						KeyManager.instance.setPasswordProtected(false);
-						KeyManager.instance.commit(KeyManagementActivity.this);
+						KeyManager.getInstance().setPasswordProtected(false);
+						KeyManager.getInstance().commit(KeyManagementActivity.this);
 					} catch(Exception e) {
 						e.printStackTrace();
 						Toast.makeText(KeyManagementActivity.this, R.string.unknown_error, Toast.LENGTH_SHORT).show();
@@ -135,12 +142,12 @@ public class KeyManagementActivity extends ExpandableListActivity {
 		});
     	
     	final Button moveKeystore = (Button) headerView.findViewById(R.id.moveKeystore);
-    	moveKeystore.setText((KeyManager.instance.isInternalStorage()) ? R.string.move_to_external : R.string.move_to_internal);
+    	moveKeystore.setText((KeyManager.getInstance().isInternalStorage()) ? R.string.move_to_external : R.string.move_to_internal);
     	moveKeystore.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-				if(KeyManager.instance.swap(KeyManagementActivity.this)) {
-					moveKeystore.setText((KeyManager.instance.isInternalStorage()) 
+				if(KeyManager.getInstance().swap(KeyManagementActivity.this)) {
+					moveKeystore.setText((KeyManager.getInstance().isInternalStorage()) 
 							? R.string.move_to_external : R.string.move_to_internal);
 				} else {
 					Toast.makeText(KeyManagementActivity.this, R.string.move_error, Toast.LENGTH_SHORT).show();
@@ -156,7 +163,7 @@ public class KeyManagementActivity extends ExpandableListActivity {
 					
 					public void onClick(DialogInterface dialog, int which) {
 						Context context = KeyManagementActivity.this;
-						KeyManager.instance.delete(context);
+						KeyManager.getInstance().delete(context);
 						
 						context.startActivity(new Intent(context, SetupActivity.class));
 						finish();
@@ -233,10 +240,10 @@ public class KeyManagementActivity extends ExpandableListActivity {
             		contact.key = key;
                 	
             		//Add the contact
-                	KeyManager.instance.getLookup().put(address, contact);
+                	KeyManager.getInstance().getLookup().put(address, contact);
                 	try {
                 		//Commit it to the db
-						KeyManager.instance.commit(this);
+						KeyManager.getInstance().commit(this);
 					} catch (Exception e) {
 						e.printStackTrace();
 						Toast.makeText(this, "An error occured while saving the keystore.", Toast.LENGTH_SHORT);
@@ -283,7 +290,7 @@ public class KeyManagementActivity extends ExpandableListActivity {
 			contacts.clear();
 			
 			//Load the contacts from the KeyManager map into the list
-			for(Entry<String, Key> entry : KeyManager.instance.getLookup().entrySet()) {
+			for(Entry<String, Key> entry : KeyManager.getInstance().getLookup().entrySet()) {
 				Contact c = new Contact();
 				Key value = entry.getValue();
 				
@@ -328,7 +335,7 @@ public class KeyManagementActivity extends ExpandableListActivity {
 					Intent intent = new Intent(context, NewContactActivity.class);
 					intent.putExtra("address", contact.address);
 					intent.putExtra("name", contact.name);
-					intent.putExtra("key", KeyManager.instance.getLookup().get(contact.address).key);
+					intent.putExtra("key", KeyManager.getInstance().getLookup().get(contact.address).key);
 					context.startActivityForResult(intent, SETUP_KEY);
 				}
 				
@@ -337,7 +344,7 @@ public class KeyManagementActivity extends ExpandableListActivity {
 			Button viewButton = (Button) view.findViewById(R.id.view);
 			viewButton.setOnClickListener(new ClickListener(contact) {
 				public void onClick(View v) {
-					Key key = KeyManager.instance.getLookup().get(contact.address);
+					Key key = KeyManager.getInstance().getLookup().get(contact.address);
 					
 					//Display the QR code
             		(new IntentIntegrator(context)).shareText(new String(Base64.encode(key.key)));
@@ -350,9 +357,9 @@ public class KeyManagementActivity extends ExpandableListActivity {
 					Dialogs.showConfirmation(context, R.string.confrimation_msg, new DialogInterface.OnClickListener() {
 						
 						public void onClick(DialogInterface dialog, int which) {
-							KeyManager.instance.getLookup().remove(contact.address);
+							KeyManager.getInstance().getLookup().remove(contact.address);
 							try {
-								KeyManager.instance.commit(context);
+								KeyManager.getInstance().commit(context);
 							} catch (Exception e) {
 								e.printStackTrace();
 								Toast.makeText(context, R.string.error_commit, Toast.LENGTH_SHORT).show();
